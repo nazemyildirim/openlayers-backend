@@ -1,4 +1,8 @@
+using Business.Abstract;
+using Business.Concrete;
 using DataAccess;
+using DataAccess.Abstract;
+using DataAccess.Concrete;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,8 +30,11 @@ namespace WebApplication36
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddControllers(); //??
             services.AddEntityFrameworkNpgsql().AddDbContext<Context>(opt => opt.UseNpgsql(Configuration.GetConnectionString("MyDBConnection")));
             services.AddMvc();
+            services.AddSingleton<IMapService, MapManager>();
+            services.AddSingleton<IMapRepo, MapRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,11 +58,12 @@ namespace WebApplication36
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
-            {
+            {   endpoints.MapControllers(); //???
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+            
         }
     }
 }
